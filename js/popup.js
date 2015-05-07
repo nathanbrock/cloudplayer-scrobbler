@@ -20,35 +20,50 @@ $(document).ready(function() {
             render_scrobble_link();
         }
         render_auth_link();
+        $(".js-dropdown-button").dropdown();
     });
 });
 
-function set_play_link() {
-    $("#cover").click(open_play_tab);
+function executeOnEnter(event, callback) {
+  var key = event.which;
+  if(key == 13) { // Enter key
+    callback();
+  }
 }
+
+function set_play_link() {
+    $(".js-open-gplay").click(open_play_tab).on('keyup', function(e) { executeOnEnter(e, open_play_tab); });
+}
+
 /* Render functions */
 function update_song_info() {
+    // Match the size attribute of the image URI and replace with 500px.
+    var largeAlbumCover = bp.player.song.cover.replace(/=s(\d+)/ig, '=s500');
+    
     $("#artist").text(bp.player.song.artist);
     $("#track").text(bp.player.song.title);
-    $("#cover").attr({ src: bp.player.song.cover || "../img/defaultcover.png",
-        alt:bp.player.song.album});
+    $("#cover").show().attr({ src: largeAlbumCover || "../img/defaultcover.png"});
     $("#album").text(bp.player.song.album);
 
     if (bp.lastfm_api.session.name && bp.lastfm_api.session.key) {
         render_love_button();
     }
+    
     toggle_play_btn();
 }
 
 function toggle_play_btn() {
-    var play_btn = $("#play-pause-btn");
+    var play_btn = $(".js-toggle-play > i");
+
     play_btn.toggle = function() {
         if (bp.player.is_playing) {
-            play_btn.removeClass();
-            play_btn.addClass("pause");
+            play_btn.removeClass('mdi-av-play-circle-fill');
+            play_btn.addClass("mdi-av-pause-circle-fill");
+            play_btn.attr('title', 'Pause track');
         } else {
-            play_btn.removeClass();
-            play_btn.addClass("play");
+            play_btn.removeClass('mdi-av-pause-circle-fill');
+            play_btn.addClass("mdi-av-play-circle-fill");
+            play_btn.attr('title', 'Play track');
         }
     }
     // TODO kind of hackish
@@ -65,19 +80,19 @@ function toggle_play_btn() {
 function render_song() {
     if (bp.player.has_song) {
         update_song_info();
-        $("#play-pause-btn").click(toggle_play);
-        $("#next-btn").click(next_song);
-        $("#prev-btn").click(prev_song);
+        $(".js-toggle-play").on('click', toggle_play).on('keyup', function(e) { executeOnEnter(e, toggle_play); });
+        $("#next-btn").on('click', next_song).on('keyup', function(e) { executeOnEnter(e, next_song); });
+        $("#prev-btn").on('click', prev_song).on('keyup', function(e) { executeOnEnter(e, prev_song); });
+        $('.js-controls').show();
+        $('.js-gplay-button').hide();
+
         if (!(bp.lastfm_api.session.name && bp.lastfm_api.session.key)) {
-            $("#lastfm-buttons").hide();
+            $(".js-lastfm-buttons").hide();
         }
     } else {
-        $("#song").addClass("nosong");
         $("#artist").text("");
-        $("#track").html('');
-        $("#cover ").attr({ src: "../img/defaultcover.png" });
-        $("#lastfm-buttons").hide();
-        $("#player-controls").hide();
+        $("#track").html('Nothing playing...');   
+        $(".js-details").hide();
     }
 }
 
@@ -85,11 +100,15 @@ function render_song() {
  * Renders the link to turn on/off scrobbling
  */
 function render_scrobble_link() {
-    $("#scrobbling").html('<a></a>');
-    $("#scrobbling a")
-    .attr("href", "#")
+    var $scrobbleLink = $('<a/>', {
+      href: "#!",
+      html: bp.SETTINGS.scrobble ? "Stop<br/>scrobbling" : "Resume<br/>scrobbling",
+      tabindex: 3,
+    })
     .click(on_toggle_scrobble)
-    .text(bp.SETTINGS.scrobble ? "Stop scrobbling" : "Resume scrobbling");
+    .on('keyup', function(e) { executeOnEnter(e, on_toggle_scrobble); });
+    
+    $('.js-scrobble-link').html($scrobbleLink);
 }
 
 /**
@@ -98,26 +117,21 @@ function render_scrobble_link() {
 function render_auth_link() {
     if (bp.lastfm_api.session.name && bp.lastfm_api.session.key) {
         render_scrobble_link();
-        $("#lastfm-profile").html("Logged in as " + "<a></a><a></a>");
-        $("#lastfm-profile a:first")
-        .attr({
-            href: "http://last.fm/user/" + bp.lastfm_api.session.name,
-            target: "_blank"
-        })
-        .text(bp.lastfm_api.session.name);
 
-        $("#lastfm-profile a:last")
-        .attr({
-            href: "#",
-            title: "Logout"
-        })
-        .click(on_logout)
-        .addClass("logout");
+        $('.js-lastfm-authed').show();
+        $(".js-btn-connect").hide();
+        $('.js-love-button').show();
+
+        $('.js-lastfm-profile')
+        .attr('href', "http://last.fm/user/" + bp.lastfm_api.session.name)
+        .attr('target', '_blank');
+
+        $('.js-logout').click(on_logout).on('keyup', function(e) { executeOnEnter(e, toggle_play); });
+
     } else {
-        $("#lastfm-profile").html('<a></a>');
-        $("#lastfm-profile a").attr("href", "#")
-        .click(on_auth)
-        .text("Connect to Last.fm");
+      $('.js-love-button').hide();
+      $('.js-love-parent').hide();
+      $(".js-btn-connect").show().click(on_auth).on('keyup', function(e) { executeOnEnter(e, on_auth); });
     }
 }
 
@@ -125,22 +139,29 @@ function render_auth_link() {
  * Renders the love button
  */
 function render_love_button() {
-    $("#love-button").html('<img src="../img/ajax-loader.gif">');
+    $('.js-love-button')
+      .removeClass("mdi-action-favorite-outline mdi-action-favorite")
+      .addClass("mdi-action-autorenew spin-icon");
 
     bp.lastfm_api.is_track_loved(bp.player.song.title,
             bp.player.song.artist,
             function(result) {
-                $("#love-button").html('<a href="#"></a>');
-                if (result) {
-                    $("#love-button a").attr({ title: "Unlove this song"})
-                    .click(on_unlove)
-                    .addClass("loved");
-
+              if(result) {
+                $('.js-love-button')
+                  .removeClass("mdi-action-autorenew mdi-action-favorite-outline spin-icon")
+                  .addClass("mdi-action-favorite")
+                  .on('click', on_unlove)
+                  .on('keyup', function(e) { executeOnEnter(e, on_unlove); });
                 } else {
-                    $("#love-button a").attr({ title: "Love this song" })
-                    .click(on_love)
-                    .addClass("notloved");
+                  $('.js-love-button')
+                    .removeClass("mdi-action-autorenew mdi-action-favorite spin-icon")
+                    .addClass("mdi-action-favorite-outline")
+                    .on('click', on_love)
+                    .on('keyup', function(e) { executeOnEnter(e, on_unlove); });
                 }
+                $('.js-love-parent').on('keyup', function(e) { executeOnEnter(e, function() {
+                  $('.js-love-button').trigger('click');
+                }); });
             });
 }
 
@@ -203,6 +224,7 @@ function on_auth() {
  */
 function on_logout() {
     bp.clear_session();
+    $('.js-lastfm-authed').hide();
     render_auth_link();
 }
 
@@ -227,7 +249,9 @@ function on_love() {
             }
         });
 
-    $("#love-button").html('<img src="../img/ajax-loader.gif">');
+    $('.js-love-button')
+      .removeClass("mdi-action-favorite-outline mdi-action-favorite")
+      .addClass("mdi-action-autorenew spin-icon");
 }
 
 /**
@@ -250,19 +274,21 @@ function on_unlove() {
             }
         });
 
-    $("#love-button").html('<img src="../img/ajax-loader.gif">');
+    $('.js-love-button')
+      .removeClass("mdi-action-favorite-outline mdi-action-favorite")
+      .addClass("mdi-action-autorenew spin-icon");
 }
 
 /**
 * Show temporary msg from me to user <3
 */
 function show_alert() {
-    $("#alert").removeClass("hidden");
-    $("#extns_link").click(function() {
+    $(".js-notifications").removeClass("hidden");
+    $(".js-open-extns").click(function() {
         bp.open_extensions_page();
     });
-    $("#dismiss_alert").click(function() {
-        $("#alert").addClass("hidden");
+    $(".js-hide-notifications").click(function() {
+        $(".js-notifications").addClass("height-hidden");
         localStorage.setItem("seen_alert", "1");
     });
 }

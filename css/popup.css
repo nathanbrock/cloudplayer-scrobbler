@@ -5,156 +5,233 @@
  * Licensed under the MIT license
  */
 
+html,
 body {
-    padding: 10px;
+    padding: 0;
     margin: 0;
     min-width: 300px;
-
-    font-family: "Helvetica", "Arial", sans-serif;
+    height: auto;
+    font-family: "Roboto";
 }
 
-span {
-    line-height: 100%;
-}
 
-a {
-    color: grey;
-}
-
-a:hover {
-    color: black;
-}
-
-#cover-box {
-    float: left;
-    border-color: #FFC200;
-    border-width: 2px;
-    border-style: solid;
-    border-radius: 5px;
-}
-
-#cover {
-    border: none;
-    width: 60px;
-    height: 60px;
-    cursor: hand;
-    cursor: pointer;
-}
-
-#song.nosong {
-    color: grey;
-}
-
-#song.nosong a {
-    font-size: 12px;
-}
-
-#song {
-    margin-left: 75px;
-}
-
-#artist {
-    font-weight: bold;
-}
-
-#album {
-    min-height: 25px;
-    font-style: italic;
-    color: #999;
-    font-size: 80%;
-}
-
-#track {
-    margin-top: 6px;
-    font-size: 14px;
-}
-
-#bottom {
-    margin-top: 10px;
-    font-size: 11px;
-
-    color: grey;
-}
-
-#scrobbling {
-    float: left;
-}
-
-#lastfm-profile {
-    float: right;
-}
-
-a.logout {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    background: url('../img/logout.png') 0 0 no-repeat;
-    margin-left: 4px;
-}
-
-a:hover.logout {
-    background-position: 0 -10px;
-}
-
-a.loved, a.notloved {
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    background-image: url('../img/love.png');
-    background-repeat: no-repeat;
-}
-
-a.loved {
-    background-position: 0 0;
-}
-
-a.notloved {
-    background-position: 0 -16px;
-}
-
-a.play, a.pause {
-    display: inline-block;
-    width: 16px;
-    height: 18;
-    background-image: url('../img/play_pause.png');
-    background-repeat: no-repeat;
-}
-
-a.play {
-    background-position: 0 0;
-}
-
-a.pause {
-    background-position: 0 -19px;
-}
-
-#prev-btn {
-    display: inline-block;
-    width: 25px;
-    height: 18px;
-    background-image: url('../img/prev.png');
-    background-repeat: no-repeat;
-}
-
-#next-btn {
-    display: inline-block;
-    width: 25px;
-    height: 18px;
-    background-image: url('../img/next.png');
-    background-repeat: no-repeat;
-}
-
-.clear {
-    clear: both;
-}
+/* Helpers */
 
 .hidden {
-    display: none;
+  display: none;
 }
 
-#alert {
-    font-size: 12px;
-    border-bottom: 1px dotted #000;
-    padding-bottom: 10px;
-    margin-bottom: 10px;
+.table {
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+  border-spacing: 4px;
+}
+
+.table__cell {
+  display: table-cell;
+  width: 100%;
+}
+
+.height-hidden {
+  transition: max-height 0.3s;
+  max-height: 0!important;
+}
+
+
+/* Nav */
+
+nav {
+  height: 50px;
+  line-height: 50px;
+}
+
+nav .brand-logo {
+  font-size: 1rem;
+  margin-left: 20px;
+}
+
+.lastfm-menu {
+  display: none;
+}
+
+.dropdown-content {
+  z-index: 50;
+}
+
+.dropdown-button {
+  outline: 0;
+}
+
+.dropdown-button:focus {
+  background-color: #E58800;
+}
+
+.dropdown__item {
+  font-size: 1rem;
+}
+
+.dropdown-content li>a {
+  color: #333;
+}
+
+
+/* Notifications */
+
+.collection .collection-item.avatar i.circle {
+  font-size: 3rem;
+}
+
+.collection .collection-item.avatar {
+  height: auto;
+}
+
+.collection .collection-item {
+  padding: 10px 45px 10px;
+}
+
+.collection .collection-item__text {
+  font-size: 12px;
+  padding-top: 5px;
+}
+
+.collection {
+  margin-top: 0;
+  margin-bottom: 0;
+  border: none;
+  max-height: 500px;
+}
+
+
+/* Card */
+
+.card {
+  margin-top: 0;
+  margin-bottom: 0;
+  border-radius: 0;
+}
+
+.open-gplay {
+  margin: 80px 30px 80px 30px;
+}
+
+.card-title {
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0)), color-stop(1%,rgba(0,0,0,0)), color-stop(20%,rgba(0,0,0,0.3)), color-stop(99%,rgba(0,0,0,0.7)), color-stop(100%,rgba(0,0,0,0.7)));
+  width: 100%;
+}
+
+.card-title__h1,
+.card-title__h2,
+.card-title__h3 {
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.6);
+  padding: 0;
+  margin: 0;
+  line-height: 120%;
+}
+
+.card-title__h1 {
+  font-size: 1.9rem;
+  width: 100%;
+  display: block;
+  font-weight: bold;
+}
+
+.card-title__h2 {
+  font-size: 1.2rem;
+}
+
+.card-title__h3 {
+  font-size: 1rem;
+  line-height: 120%;
+  margin: 3px 0 0 0;
+}
+
+.card .card-action {
+  display: none;
+  padding: 0;
+}
+
+.card .card-action a.btn {
+  color: #FFF;
+  margin-right: 0;
+  width: 24%;
+  box-sizing: border-box;
+}
+
+.card-image {
+  cursor: pointer;
+}
+
+.card-image__image {
+  border-radius: 0;
+  height: 300px ;
+}
+
+
+/* Buttons */
+
+.btn {
+  height: auto;
+}
+
+.btn:focus {
+  outline: -webkit-focus-ring-color auto 5px;
+}
+
+.btn .medium {
+  font-size: 2rem;
+}
+
+.love-button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: none;
+}
+
+.btn-connect {
+  display: none;
+}
+
+.btn-icon-click {
+  padding: 0;
+  line-height: initial;
+} 
+
+.btn-icon-click > i {
+  line-height: 42px;
+  width: 100%;
+  display: block;
+}
+
+
+/* Colour */
+
+.lastfm-red {
+  background-color: #E31B23;
+}
+
+
+/* Animations */
+
+.spin-icon {
+  -webkit-animation: spin;
+  -webkit-animation-duration: 1s;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-timing-function: linear;
+}
+
+@-moz-keyframes spin {
+    from { -moz-transform: rotate(0deg); }
+    to { -moz-transform: rotate(360deg); }
+}
+
+@-webkit-keyframes spin {
+    from { -webkit-transform: rotate(0deg); }
+    to { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+    from {transform:rotate(0deg);}
+    to {transform:rotate(360deg);}
 }

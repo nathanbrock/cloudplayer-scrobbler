@@ -1,55 +1,108 @@
+<!DOCTYPE html>
 <!--
  popup.html
  Popup page
  Copyright (c) 2011 Alexey Savartsov <asavartsov@gmail.com>
  Licensed under the MIT license
 -->
-<head>
-    <link rel="stylesheet" type="text/css" href="../css/popup.css">
 
-    <script src="../js/jquery-1.7.min.js"></script>
-    <script src="../js/md5.js"></script>
-    <script src="../js/lastfm.js"></script>
-    <script src="../js/util.js"></script>
-    <script src="../js/popup.js"></script>
+<head>
+  <title>Google Music Scrobbler</title>
+  <link rel="stylesheet" type="text/css" href="../css/materialize.min.css">
+  <link rel="stylesheet" type="text/css" href="../css/popup.css">
+
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+  <script src="../js/jquery-1.7.min.js"></script>
+  <script src="../js/materialize.min.js"></script>
+  <script src="../js/md5.js"></script>
+  <script src="../js/lastfm.js"></script>
+  <script src="../js/util.js"></script>
+  <script src="../js/popup.js"></script>
 </head>
+
 <body>
-    <div id="alert" class="hidden">
-        Keyboard shortcuts are now available. To edit them, go to
-        <a id="extns_link" href="#">chrome://extensions</a> and click
-        "Keyboard shortcuts" at the bottom right of the page.
-        (<a id="dismiss_alert" href="#">dismiss</a>)
+
+  <!-- Dropdown Contents -->
+  <ul id="dropdown" class="dropdown-content">
+    <li class="js-scrobble-link"></li>
+    <li>
+      <a tabindex="4" class="js-lastfm-profile" href="http://www.last.fm" rel="external" title="Visit Lastfm Profile">Profile</a>
+    </li>
+    <li>
+      <a tabindex="5" class="js-logout" href="#!" title="Unauthorize you Last.fm account">Logout</a>
+    </li>
+  </ul>
+
+  <!-- Top Right Nav Dropdown -->
+  <nav>
+    <div class="nav-wrapper orange">
+      <div class="center btn-connect js-btn-connect">
+        <a class="waves-effect waves-light btn red accent-4 lastfm-red" tabindex="1">Connect to Last.fm</a>
+      </div>
+      <ul class="right lastfm-menu js-lastfm-authed">
+       <li><a class="dropdown-button js-dropdown-button" href="#" data-activates="dropdown" tabindex="2"><i class="mdi-navigation-more-vert"></i></a></li>
+     </ul>
+   </div>
+ </nav>
+
+ <!-- Notifications -->
+  <ul class="collection hidden js-notifications notifications">
+    <li class="collection-item avatar">
+      <i class="medium mdi-action-info-outline circle orange"></i>
+      <span class="title">Keyboard shortcuts</span>
+      <p class="collection-item__text">Keyboard shortcuts are now available. To edit them, go to <a class="js-open-extns" href="#">chrome://extensions</a> and click "Keyboard shortcuts" at the bottom right of the page.</p>
+      <a href="#!" class="secondary-content js-hide-notifications"><i class="small mdi-navigation-close"></i></a>
+    </li>
+  </ul>
+
+ <!-- Track Card -->
+ <div class="card">
+
+  <!-- Album Cover Image and Title -->
+  <div class="card-image js-track-details js-open-gplay" title="Open Google Music tab">
+
+    <!-- Card Image and Placeholder -->
+    <div class="card-image__placehold center-align orange darken-2">
+     <a class="js-gplay-button open-gplay waves-effect waves-light btn" tabindex="6"><i class="mdi-av-my-library-music right"></i>Open Google Play</a>
+      <img class="hidden card-image__image" id="cover" alt="Current track" src="../img/pixel.png" />
     </div>
-    <div id="content">
-        <div id="main">
-            <div id="cover-box">
-                <img id="cover"/>
-            </div>
-            <div id="song">
-                <span id="now-playing">
-                    <span id="artist"></span>&nbsp;-&nbsp;
-                    <span id="track"></span>
-                </span>
-                <div id="album"></div>
-                <div id="controls">
-                    <span id="lastfm-buttons">
-                        <span id="love-button"></span>
-                        &nbsp;&nbsp;&nbsp;
-                    </span>
-                    <span id="player-controls">
-                        <a id="prev-btn" href="#"></a>
-                        &nbsp;&nbsp;&nbsp;
-                        <a id="play-pause-btn" href="#"></a>
-                        &nbsp;&nbsp;&nbsp;
-                        <a id="next-btn" href="#"></a>
-                    </span>
-                </div>
-            </div>
-        </div>
-        <div class="clear"></div>
-        <div id="bottom">
-            <div id="scrobbling"></div>
-            <div id="lastfm-profile"></div>
-        </div>
+
+    <!-- Track Details -->
+    <div class="card-title js-details">
+      <h1 class="card-title__h1" id="track">&nbsp;</h1>
+      <h2 class="card-title__h2" id="artist">&nbsp;</h2>
+      <h3 class="card-title__h3" id="album">&nbsp;</h3>
     </div>
-</body>
+
+  </div>
+
+  <!-- Player Buttons --> 
+  <div class="card-action js-controls">
+    <div class="table">
+
+      <!-- Previous Button -->
+      <a class="table__cell waves-effect waves-light btn orange darken-4 btn-icon-click" id="prev-btn" tabindex="6" aria-label="Previous track">
+        <i class="medium mdi-av-skip-previous" title="Previous track"></i>
+      </a>
+
+      <!-- Play / Pause Button -->
+      <a class="table__cell waves-effect waves-light btn orange darken-4 btn-icon-click js-toggle-play" tabindex="7" aria-label="Pause track">
+        <i class="medium mdi-av-play-circle-fill" title="Play track"></i>
+      </a>
+
+      <!-- Next Track Button -->
+      <a class="table__cell waves-effect waves-light btn orange darken-4 btn-icon-click" tabindex="8" id="next-btn" aria-label="Next track">
+        <i class="medium mdi-av-skip-next" title="Next track"></i>
+      </a>
+
+      <!-- Love Button -->
+      <a class="table__cell waves-effect waves-light btn red accent-4 lastfm-red btn-icon-click js-love-parent" id="love-button" tabindex="9" aria-label="Love this track">
+        <i class="mdi-action-favorite-outline js-love-button" title="Love this track"></i>
+      </a>
+
+    </div>
+  </div>
+
+</div>
+<!-- End Track Card -->
